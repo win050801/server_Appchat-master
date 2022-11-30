@@ -4,6 +4,9 @@ const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth");
 const messageRoutes = require("./routes/messages");
 const roomRoutes = require("./routes/room");
+const friendRoutes = require("./routes/friend");
+const requestFriendRoutes = require("./routes/requestFriend");
+
 const app = express();
 const socket = require("socket.io");
 require("dotenv").config();
@@ -26,6 +29,8 @@ mongoose
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/room/", roomRoutes);
+app.use("/api/friend/", friendRoutes);
+app.use("/api/requestFriend/", requestFriendRoutes);
 
 const server = app.listen(process.env.PORT, () =>
     console.log(`Server started on ${process.env.PORT}`)
@@ -38,16 +43,23 @@ const io = socket(server, {
 });
 
 global.onlineUsers = new Map();
+global.addUser = new Map();
 io.on("connection", (socket) => {
     global.chatSocket = socket;
+
     socket.on("add-user", (userId) => {
         // console.log("Co nguoi online");
         onlineUsers.set(userId, socket.id);
-        // console.log("online: "+onlineUsers);
-        // console.log(onlineUsers);
     });
+
+    socket.on("send-request-add-friend", (data) => {
+        console.log("request-add-friend");
+        console.log(data);
+    });
+
     socket.on("deleted-msg", (data) => {
         const sendUserSocket = onlineUsers.get(data.to);
+
         if (sendUserSocket) {
             socket.to(sendUserSocket).emit("msg-deleted", {
                 id: data.id,

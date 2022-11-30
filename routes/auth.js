@@ -1,15 +1,17 @@
 const {
-  login,
-  register,
-  getAllUsers,
-  setAvatar,
-  logOut,
-  ktraSDT
+    login,
+    register,
+    getAllUsers,
+    setAvatar,
+    logOut,
+    ktraSDT,
+    updateUser,
 } = require("../controllers/userController");
 
 const router = require("express").Router();
 
 router.post("/login", login);
+router.post("/updateUser", updateUser);
 router.post("/ktraSDT", ktraSDT);
 router.post("/register", register);
 router.post("/allusers/", getAllUsers);
